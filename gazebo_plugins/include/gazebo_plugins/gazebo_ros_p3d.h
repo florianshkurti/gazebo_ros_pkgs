@@ -87,6 +87,8 @@ namespace gazebo
     /// FIXME: extract link name directly?
     private: std::string frame_name_;
     private: std::string tf_frame_name_;
+    private: std::string tf_child_frame_name_;
+
 
     /// \brief allow specifying constant xyz and rpy offsets
     private: math::Pose offset_;

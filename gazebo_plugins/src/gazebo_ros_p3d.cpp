@@ -91,6 +91,16 @@ void GazeboRosP3D::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
   else
     this->frame_name_ = _sdf->GetElement("frameName")->Get<std::string>();
 
+  
+  if (!_sdf->HasElement("childFrameName"))
+  {
+    ROS_DEBUG("p3d plugin missing <childFrameName>, defaults to empty string");
+    this->tf_child_frame_name_ = "";
+  }
+  else
+    this->tf_child_frame_name_ = _sdf->GetElement("childFrameName")->Get<std::string>();
+
+
   if (!_sdf->HasElement("xyzOffset"))
   {
     ROS_DEBUG("p3d plugin missing <xyzOffset>, defaults to 0s");
@@ -138,9 +148,10 @@ void GazeboRosP3D::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
   this->pmq.startServiceThread();
 
   // resolve tf prefix
-  std::string prefix;
-  this->rosnode_->getParam(std::string("tf_prefix"), prefix);
-  this->tf_frame_name_ = tf::resolve(prefix, this->frame_name_);
+  //std::string prefix;
+  //this->rosnode_->getParam(std::string("tf_prefix"), prefix);
+  //this->tf_frame_name_ = tf::resolve(prefix, this->frame_name_);
+  this->tf_frame_name_ = this->frame_name_;
 
   if (this->topic_name_ != "")
   {
@@ -219,6 +230,7 @@ void GazeboRosP3D::UpdateChild()
       {
         // copy data into pose message
         this->pose_msg_.header.frame_id = this->tf_frame_name_;
+        this->pose_msg_.child_frame_id = this->tf_child_frame_name_;
         this->pose_msg_.header.stamp.sec = cur_time.sec;
         this->pose_msg_.header.stamp.nsec = cur_time.nsec;
 
